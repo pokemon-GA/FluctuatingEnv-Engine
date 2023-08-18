@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 # グラフ可視化
 import plotly.graph_objects as go
+import pprint
+import copy
 #~.iat[列,行]
 
 #number_of_party
@@ -12,17 +14,22 @@ number_of_element = 10
 #the range of rand
 min_rand = 0
 max_rand = 5
-#独立関数の設定
-
 #平均値のx倍 <-今回は十個
 a_times = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 #平均値の加減算 <-今回は十個
 b_add_and_sub = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+#得点の設定
+point=1
+#エリート洗濯時の下限順位
+lower_limit = 5
 
 
 #初期集団の生成
 #[x_1, x_2, x_3]
 party = [[random.randint(min_rand,max_rand) for _ in range(number_of_element)] for _ in range(number_of_party)]
+
+print("Party (This is a original data)")
+pprint.pprint(party)
 
 ####評価関数の下準備####
 #各要素ごとに固めて、配列化
@@ -30,10 +37,11 @@ party_element_list = []
 for i in range(number_of_party):
     party_element = []
     for j in range(number_of_element):
-        party_element.append(party[i][j])
+        party_element.append(party[j][i])
     party_element_list.append(party_element)
 
-print(party_element_list)
+print("Elemented ([[No.0 elements][No.1 elements]...])")
+pprint.pprint(party_element_list)
 
 #平均値取る
 average_list = []
@@ -41,6 +49,7 @@ for i in range(number_of_element):
     average = np.average(party_element_list[i])
     average_list.append(average)
 
+print("Average list (average_list)")
 print(average_list)
 
 ####スケーリング####
@@ -59,8 +68,6 @@ for i in range(number_of_element):
     #     err_max = (np.max(party_element_list[i]) / average_list[i]) + 0.01
     #     print(f"You should change the {i} a_times number in the range from {err_min} to {err_max}")
 
-print(times_evaluation_value_list)
-
 #平均値をb増やす
 evaluation_value_list = []
 for i in range(number_of_element):
@@ -76,9 +83,11 @@ for i in range(number_of_element):
     #     err_max = (np.max(party_element_list[i]) / average_list[i]) + 0.01
     #     print(f"You should change the {i} b_add_and_sub number in the range from {err_min} to {err_max}")
 
+print("Scaled (evaluation_value_list)")
 print(evaluation_value_list)
 
 ####評価関数####
+#評価
 indices_list = []
 for i in range(number_of_element):
     #絶対値 <-np.abs
@@ -86,7 +95,79 @@ for i in range(number_of_element):
     indices = np.where(distance == np.min(distance))[0]
     indices_list.append(indices)
 
-print(indices_list)
-#配列番号の付与
-# for i in range(number_of_element):
-#     party[i].insert(0, i)
+print("Indices List")
+pprint.pprint(indices_list)
+
+#得点の付与
+party_changed = copy.deepcopy(party)
+party_access = copy.deepcopy(party)
+for i in range(number_of_element):
+    for j in range(len(indices_list[i])):
+        party_address = indices_list[i][j]
+        party_changed[party_address][i] = [party_access[party_address][i], point]
+
+print("Result")
+pprint.pprint(party_changed)
+
+#得点の集計
+party_point_list = []
+for i in range(number_of_party):
+    party_point = 0
+    for j in range(number_of_element):
+        if type(party_changed[i][j]) is list:
+            party_point = party_point + point
+        else:
+            pass
+    party_point_list.append(party_point)
+#パーティ番号の付与
+for i in range(number_of_party):
+    party_point = party_point_list[i]
+    party_point_list[i] = [party_point, i]
+
+print("Molded Party Point (party_point_list)")
+print(party_point_list)
+
+#ソートする
+sorted_data = sorted(party_point_list, reverse=True)
+
+print("Sorted Data")
+print(sorted_data)
+
+#選択 (エリート戦略)
+selected_data = sorted_data[:lower_limit]
+
+print("Selected Data")
+print(selected_data)
+
+selected_party_list = []
+for i in range(lower_limit):
+    for j in range(2):
+        if j==0:
+            pass
+        elif j==1:
+            selected_party = party[selected_data[i][j]]
+    selected_party_list.append(selected_party)
+
+print("Selected Party list")
+pprint.pprint(selected_party_list)
+
+#交叉 (1点交叉)
+child = []
+child_list = []
+for i in range(number_of_party - lower_limit):
+    number_of_element_molded = number_of_element - 1
+    random_choice_1_list = selected_party_list[random.randint(0, lower_limit - 1)]
+    random_choice_2_list = selected_party_list[random.randint(0, lower_limit - 1)]
+    print(random_choice_1_list)
+    print(random_choice_2_list)
+    random_cut_1 = random.randint(0, number_of_element_molded)
+    random_cut_1_list = random_choice_1_list[:random_cut_1]
+    random_cut_2= number_of_element - random_cut_1
+    random_cut_2_list = random_choice_2_list[:random_cut_2]
+    print(random_cut_1_list)
+    print(random_cut_2_list)
+    child = random_cut_1_list + random_cut_2_list
+    child_list.append(child)
+
+print("赤ちゃん爆誕")
+print(child_list)
