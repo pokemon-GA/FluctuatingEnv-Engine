@@ -154,6 +154,7 @@ def GA(number_of_party, number_of_element, min_rand, max_rand, a_times, b_add_an
     result = selected_party_list + child_list
     print("合体（新しい母集団の完成）")
     print(result)
+    return result
 
 
 
