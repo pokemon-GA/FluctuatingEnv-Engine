@@ -148,13 +148,18 @@ def GA(number_of_party, number_of_element, min_rand, max_rand, a_times, b_add_an
             pass
 
     print("赤ちゃんの突然変異")
-    print(child_list)
+    pprint.pprint(child_list)
 
     #合体(新しい母集団の完成)
     result = selected_party_list + child_list
     print("合体（新しい母集団の完成）")
-    print(result)
-    return result
+    pprint.pprint(result)
+
+    #グラフ描画に関する部分
+    top_result = []
+    top_result = selected_party_list[0]
+
+    return result, top_result
 
 
 
@@ -170,9 +175,9 @@ number_of_party = 10
 number_of_element = 10
 #the range of rand
 min_rand = 0
-max_rand = 5
+max_rand = 30
 #平均値のx倍 <-今回は十個
-a_times = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+a_times = [1.1, 2, 4, 3, 0.3, 3, 5, 7, 1.3, 1.7]
 #平均値の加減算 <-今回は十個
 b_add_and_sub = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 #得点の設定
@@ -182,19 +187,47 @@ lower_limit = 5
 #突然変異の発生割合 (0~1)
 probability = 0
 #世代
-generation = 1000
+generation = 10
 
 ######################初期集団の生成######################
 #[x_1, x_2, x_3]
 party = [[random.randint(min_rand,max_rand) for _ in range(number_of_element)] for _ in range(number_of_party)]
-
-print("Party (This is a original data)")
-print(party)
-
-
 ######################実行######################
 gen=1
+arr_1 = []
+arr_2 = []
+arr_3 = []
+arr_4 = []
+arr_5 = []
+arr_6 = []
+arr_7 = []
+arr_8 = []
+arr_9 = []
+arr_10 = []
+
 while gen <= generation:
     print(f"第{gen}世代")
-    result = GA(number_of_party, number_of_element, min_rand, max_rand, a_times, b_add_and_sub, point, lower_limit, probability, party)
+    party, top_result = GA(number_of_party, number_of_element, min_rand, max_rand, a_times, b_add_and_sub, point, lower_limit, probability, party)
     gen = gen + 1
+    arr_1.append(top_result[0])
+    arr_2.append(top_result[1])
+    arr_3.append(top_result[2])
+    arr_4.append(top_result[3])
+    arr_5.append(top_result[4])
+    arr_6.append(top_result[5])
+    arr_7.append(top_result[6])
+    arr_8.append(top_result[7])
+    arr_9.append(top_result[8])
+    arr_10.append(top_result[9])
+
+
+print(arr_1)
+print(arr_2)
+print(arr_3)
+print(arr_4)
+print(arr_5)
+print(arr_6)
+print(arr_7)
+print(arr_8)
+print(arr_9)
+print(arr_10)
